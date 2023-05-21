@@ -44,5 +44,10 @@ class UserService
         return $user;
     }
 
+    public function profile() : User
+    {
+        return request()->user();
+    }
+
 //    public function
 }

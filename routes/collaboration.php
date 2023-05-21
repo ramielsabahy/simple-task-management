@@ -14,6 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['prefix' => 'attachment', 'namespace' => 'App\Http\Controllers\Api', 'middleware' => 'auth:sanctum'], function (){
-    Route::post('store', 'AttachmentController@store');
+Route::group(['prefix' => 'collaborations', 'namespace' => 'App\Http\Controllers\Api', 'middleware' => 'auth:sanctum'], function (){
+    Route::post('store', 'CollaborationController@store');
 });

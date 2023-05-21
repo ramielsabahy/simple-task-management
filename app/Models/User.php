@@ -42,4 +42,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function collaborations()
+    {
+        return $this->hasManyThrough(Task::class, Collaboration::class, 'user_id', 'id', '', 'task_id');
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }

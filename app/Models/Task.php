@@ -30,7 +30,16 @@ class Task extends Model
 
     public function ScopeOwner($query)
     {
-        $query->where('user_id', request()->user()->id);
+        $query->where('user_id', request()->user()->id)->orWhere(function ($query){
+            $query->whereHas('collaborations', function ($collaborator) {
+                $collaborator->where('user_id', request()->user()->id);
+            });
+        });
+    }
+
+    public function collaborations()
+    {
+        return $this->hasMany(Collaboration::class);
     }
 
     public function images(){
