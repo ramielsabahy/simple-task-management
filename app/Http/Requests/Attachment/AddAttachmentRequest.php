@@ -24,7 +24,8 @@ class AddAttachmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'attachment'            => 'required|mimes:jpg,jpeg,png,bmp,tiff'
+            'attachment'            => 'required|mimes:jpg,jpeg,png,bmp,tiff',
+            'task_id'               => 'required|exists:tasks,id'
         ];
     }
 

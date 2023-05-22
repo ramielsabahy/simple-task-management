@@ -27,6 +27,8 @@ class AttachmentController extends Controller
     public function store(AddAttachmentRequest $request)
     {
         $attachment = $this->addAttachmentService->store($request->only('attachment', 'task_id'));
-        return customResponse(new TaskResource($attachment->task->load('images')));
+        if ($attachment)
+            return customResponse(new TaskResource($attachment->task->load('images')));
+        return customResponse((object)[], "Task not found", 404);
     }
 }

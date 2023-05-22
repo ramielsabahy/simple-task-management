@@ -23,12 +23,12 @@ class UserService
      * @return array
      * @throws ValidationException
      */
-    public function login($data) : User
+    public function login($data) : User|null
     {
         $user = $this->repository->login($data);
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            return [];
+            return null;
         }
 
         return $user;

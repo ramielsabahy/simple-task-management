@@ -22,48 +22,77 @@ use Illuminate\Http\Request;
  */
 class TaskController extends Controller
 {
-    /**
-     * @var TaskRepository
-     */
-    private TaskRepository $repository;
 
     /**
-     * @param TaskRepository $repository
+     * @var StoreTaskService
      */
-    public function __construct(TaskRepository $repository)
+    private StoreTaskService $storeTaskService;
+    /**
+     * @var ListTasksService
+     */
+    private ListTasksService $listTasksService;
+    /**
+     * @var TaskDetailsService
+     */
+    private TaskDetailsService $taskDetailsService;
+    /**
+     * @var UpdateTaskService
+     */
+    private UpdateTaskService $updateTaskService;
+    /**
+     * @var DeleteTaskService
+     */
+    private DeleteTaskService $deleteTaskService;
+
+
+    /**
+     * @param StoreTaskService $storeTaskService
+     * @param ListTasksService $listTasksService
+     * @param TaskDetailsService $taskDetailsService
+     * @param UpdateTaskService $updateTaskService
+     * @param DeleteTaskService $deleteTaskService
+     */
+    public function __construct(
+        StoreTaskService $storeTaskService,
+        ListTasksService $listTasksService,
+        TaskDetailsService $taskDetailsService,
+        UpdateTaskService $updateTaskService,
+        DeleteTaskService $deleteTaskService
+    )
     {
-        $this->repository = $repository;
+        $this->storeTaskService = $storeTaskService;
+        $this->listTasksService = $listTasksService;
+        $this->taskDetailsService = $taskDetailsService;
+        $this->updateTaskService = $updateTaskService;
+        $this->deleteTaskService = $deleteTaskService;
     }
 
     /**
      * @param CreateTaskRequest $request
-     * @param StoreTaskService $storeTaskService
      * @return JsonResponse
      */
-    public function store(CreateTaskRequest $request, StoreTaskService $storeTaskService) : JsonResponse
+    public function store(CreateTaskRequest $request) : JsonResponse
     {
-        $task = $storeTaskService->store($request->only('title','description','due_date','status'));
+        $task = $this->storeTaskService->store($request->only('title','description','due_date','status'));
         return customResponse(new TaskResource($task), "Task created successfully", 200);
     }
 
     /**
-     * @param ListTasksService $listTasksService
      * @return JsonResponse
      */
-    public function index(ListTasksService $listTasksService, ListTasksRequest $request) : JsonResponse
+    public function index(ListTasksRequest $request) : JsonResponse
     {
-        $tasks = $listTasksService->all($request);
+        $tasks = $this->listTasksService->all($request);
         return customResponse(TaskResource::collection($tasks));
     }
 
     /**
      * @param $id
-     * @param TaskDetailsService $taskDetailsService
      * @return JsonResponse
      */
-    public function show($id, TaskDetailsService $taskDetailsService) : JsonResponse
+    public function show($id) : JsonResponse
     {
-        $task = $taskDetailsService->find($id);
+        $task = $this->taskDetailsService->find($id);
         if ($task)
             return customResponse(new TaskResource($task));
         return customResponse((object)[], "Task not found", 404);
@@ -72,12 +101,11 @@ class TaskController extends Controller
     /**
      * @param $id
      * @param UpdateTaskRequest $request
-     * @param UpdateTaskService $updateTaskService
      * @return JsonResponse
      */
-    public function update($id, UpdateTaskRequest $request, UpdateTaskService $updateTaskService, StatusUpdatedEmailService $emailService) : JsonResponse
+    public function update($id, UpdateTaskRequest $request, StatusUpdatedEmailService $emailService) : JsonResponse
     {
-        $updated = $updateTaskService->update($id, $request->only('title','description','due_date','status'));
+        $updated = $this->updateTaskService->update($id, $request->only('title','description','due_date','status'));
         if ($updated){
             if (isset($request->status))
                 $emailService->send($id);
@@ -89,12 +117,11 @@ class TaskController extends Controller
     /**
      * @param $id
      * @param UpdateTaskRequest $request
-     * @param UpdateTaskService $updateTaskService
      * @return JsonResponse
      */
-    public function toggleStatus($id, UpdateTaskRequest $request, UpdateTaskService $updateTaskService) : JsonResponse
+    public function toggleStatus($id, UpdateTaskRequest $request) : JsonResponse
     {
-        $toggled = $updateTaskService->update($id, $request->only('status'));
+        $toggled = $this->updateTaskService->update($id, $request->only('status'));
         if ($toggled)
             return customResponse((object)[], "Status updated successfully", 200);
         return customResponse((object)[], "No task found for you with this id", 404);
@@ -102,12 +129,11 @@ class TaskController extends Controller
 
     /**
      * @param $id
-     * @param DeleteTaskService $deleteTaskService
      * @return JsonResponse
      */
-    public function destroy($id, DeleteTaskService $deleteTaskService)
+    public function destroy($id)
     {
-        $deleted = $deleteTaskService->destroy($id);
+        $deleted = $this->deleteTaskService->destroy($id);
         if ($deleted)
             return customResponse((object)[], "Task deleted successfully", 200);
         return customResponse((object)[], "No task found for you with this id", 404);

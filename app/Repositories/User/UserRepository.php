@@ -26,7 +26,7 @@ class UserRepository implements UserRepositoryInterface
      * @param array $data
      * @return User
      */
-    public function login(array $data): User
+    public function login(array $data): User|null
     {
         return User::where('email', $data['email'])->first();
 
