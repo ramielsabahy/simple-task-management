@@ -6,7 +6,7 @@ This task is built using [Laravel Sail](https://laravel.com/docs/10.x/sail), Thi
 
 I used sanctum for authentication.
 
-I used Service & Repository archeticture to make the code looks better and to acheive some of SOLID princibles.
+I used Service & Repository architecture to make the code looks better and to achieve some of SOLID principles.
 
 I implemented queue for both sending email and resizing images to get the best performance, so to receive the email please change `MAIL_USERNAME` & `MAIL_PASSWORD` to your mailtrap account.
 
